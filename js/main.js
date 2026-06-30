@@ -82,11 +82,20 @@ function renderCategory(category) {
     const card = document.createElement('div');
     card.className = 'video-card';
     card.setAttribute('data-video', id);
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `Reproducir video, proyecto ${category} ${index + 1}`);
     card.innerHTML = `
       <img loading="lazy" src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt="Proyecto ${category} ${index + 1}">
       <span class="video-card__play"><svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
     `;
-    card.addEventListener('click', () => openVideo(id));
+    card.addEventListener('click', () => openVideo(id, card));
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openVideo(id, card);
+      }
+    });
     carouselTrack.appendChild(card);
     markReveal(card, index * 70);
   });
@@ -97,8 +106,12 @@ function renderCategory(category) {
 
 tabs.forEach((tab) => {
   tab.addEventListener('click', () => {
-    tabs.forEach((t) => t.classList.remove('is-active'));
+    tabs.forEach((t) => {
+      t.classList.remove('is-active');
+      t.setAttribute('aria-selected', 'false');
+    });
     tab.classList.add('is-active');
+    tab.setAttribute('aria-selected', 'true');
     renderCategory(tab.getAttribute('data-category'));
   });
 });
@@ -138,19 +151,39 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
 /* Video modal */
 const videoModal = document.getElementById('videoModal');
 const videoFrame = document.getElementById('videoFrame');
+const modalCloseBtn = videoModal.querySelector('.video-modal__close');
+let lastFocusedEl = null;
 
-function openVideo(id) {
+function openVideo(id, triggerEl) {
+  lastFocusedEl = triggerEl || document.activeElement;
   videoFrame.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
   videoModal.classList.add('is-open');
+  modalCloseBtn.focus();
 }
 
 function closeModal() {
   videoModal.classList.remove('is-open');
   videoFrame.src = '';
+  if (lastFocusedEl) lastFocusedEl.focus();
 }
 
 videoModal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', closeModal));
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', (e) => {
+  if (!videoModal.classList.contains('is-open')) return;
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Tab') {
+    const focusable = videoModal.querySelectorAll('button, iframe, [tabindex]:not([tabindex="-1"])');
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  }
+});
 
 /* Stats counter */
 const statNumbers = document.querySelectorAll('.stat__number');
@@ -181,12 +214,25 @@ if (statsSection) {
 }
 
 /* FAQ accordion */
-document.querySelectorAll('.accordion__trigger').forEach((trigger) => {
+document.querySelectorAll('.accordion__item').forEach((item, index) => {
+  const trigger = item.querySelector('.accordion__trigger');
+  const panel = item.querySelector('.accordion__panel');
+  const panelId = `faq-panel-${index}`;
+
+  panel.id = panelId;
+  trigger.setAttribute('aria-expanded', 'false');
+  trigger.setAttribute('aria-controls', panelId);
+
   trigger.addEventListener('click', () => {
-    const item = trigger.closest('.accordion__item');
     const wasOpen = item.classList.contains('is-open');
-    item.parentElement.querySelectorAll('.accordion__item').forEach((i) => i.classList.remove('is-open'));
-    if (!wasOpen) item.classList.add('is-open');
+    item.parentElement.querySelectorAll('.accordion__item').forEach((i) => {
+      i.classList.remove('is-open');
+      i.querySelector('.accordion__trigger').setAttribute('aria-expanded', 'false');
+    });
+    if (!wasOpen) {
+      item.classList.add('is-open');
+      trigger.setAttribute('aria-expanded', 'true');
+    }
   });
 });
 

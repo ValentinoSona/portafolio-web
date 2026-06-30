@@ -29,6 +29,7 @@
 </head>
 <body>
 
+<a href="#main" class="skip-link">Saltar al contenido principal</a>
 <header class="navbar" id="navbar">
   <div class="container navbar__inner">
     <a href="#inicio" class="logo">
@@ -54,7 +55,7 @@
   </div>
 </header>
 
-<main>
+<main id="main">
 
   <section class="hero" id="inicio">
     <div class="hero__glow" aria-hidden="true"></div>
@@ -117,13 +118,13 @@
       <h2 class="section__title" data-reveal>Trabajos destacados</h2>
       <p class="section__lead" data-reveal>Proyectos de edición y contenido desarrollados para marcas y negocios de distintos rubros. Hacé clic en cualquier video para reproducirlo.</p>
 
-      <div class="tabs" id="categoryTabs" data-reveal>
-        <button class="tab is-active" data-category="real-estate">Real Estate</button>
-        <button class="tab" data-category="real-estate-ia">Real Estate con IA</button>
-        <button class="tab" data-category="anuncios-ae">Anuncios con After Effects</button>
-        <button class="tab" data-category="finanzas">Finanzas</button>
-        <button class="tab" data-category="comercios">Comercios</button>
-        <button class="tab" data-category="anuncios-ia">Anuncios con IA</button>
+      <div class="tabs" id="categoryTabs" data-reveal role="tablist" aria-label="Categorías de proyectos">
+        <button class="tab is-active" role="tab" aria-selected="true" data-category="real-estate">Real Estate</button>
+        <button class="tab" role="tab" aria-selected="false" data-category="real-estate-ia">Real Estate con IA</button>
+        <button class="tab" role="tab" aria-selected="false" data-category="anuncios-ae">Anuncios con After Effects</button>
+        <button class="tab" role="tab" aria-selected="false" data-category="finanzas">Finanzas</button>
+        <button class="tab" role="tab" aria-selected="false" data-category="comercios">Comercios</button>
+        <button class="tab" role="tab" aria-selected="false" data-category="anuncios-ia">Anuncios con IA</button>
       </div>
     </div>
 
@@ -228,11 +229,19 @@
       <p class="cta__lead" data-reveal>Contame sobre tu marca o negocio y armamos juntos una estrategia de contenido a medida.</p>
       <form class="contact-form" id="contactForm" data-reveal action="https://formspree.io/f/mnjkbyva" method="POST">
         <div class="form-row">
-          <input type="text" name="nombre" placeholder="Tu nombre" required>
-          <input type="text" name="contacto" placeholder="Email o Instagram" required>
+          <div>
+            <label class="sr-only" for="fieldNombre">Tu nombre</label>
+            <input type="text" id="fieldNombre" name="nombre" placeholder="Tu nombre" required>
+          </div>
+          <div>
+            <label class="sr-only" for="fieldContacto">Email o Instagram</label>
+            <input type="text" id="fieldContacto" name="contacto" placeholder="Email o Instagram" required>
+          </div>
         </div>
-        <input type="text" name="proyecto" placeholder="Tipo de proyecto (ej. Reels, campaña)">
-        <textarea name="mensaje" placeholder="Contame un poco sobre tu proyecto" rows="4" required></textarea>
+        <label class="sr-only" for="fieldProyecto">Tipo de proyecto</label>
+        <input type="text" id="fieldProyecto" name="proyecto" placeholder="Tipo de proyecto (ej. Reels, campaña)">
+        <label class="sr-only" for="fieldMensaje">Tu mensaje</label>
+        <textarea id="fieldMensaje" name="mensaje" placeholder="Contame un poco sobre tu proyecto" rows="4" required></textarea>
         <button type="submit" class="btn btn--primary">Enviar mensaje</button>
         <p class="form-status" id="formStatus" role="status"></p>
       </form>
@@ -254,7 +263,7 @@
   </div>
 </footer>
 
-<div class="video-modal" id="videoModal">
+<div class="video-modal" id="videoModal" role="dialog" aria-modal="true" aria-label="Reproductor de video">
   <div class="video-modal__backdrop" data-close></div>
   <div class="video-modal__inner">
     <button class="video-modal__close" data-close aria-label="Cerrar"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg></button>
