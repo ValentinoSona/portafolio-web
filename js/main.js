@@ -91,6 +91,8 @@ function renderCategory(category) {
     markReveal(card, index * 70);
   });
   carouselTrack.scrollTo({ left: 0 });
+  const carouselEl = carouselTrack.closest('[data-carousel]');
+  if (carouselEl && carouselEl._updateArrows) carouselEl._updateArrows();
 }
 
 tabs.forEach((tab) => {
@@ -109,8 +111,28 @@ document.querySelectorAll('[data-carousel]').forEach((carousel) => {
   const prev = carousel.querySelector('.carousel__arrow--prev');
   const next = carousel.querySelector('.carousel__arrow--next');
 
-  prev.addEventListener('click', () => track.scrollBy({ left: -432, behavior: 'smooth' }));
-  next.addEventListener('click', () => track.scrollBy({ left: 432, behavior: 'smooth' }));
+  function maxScroll() {
+    return Math.max(0, track.scrollWidth - track.clientWidth);
+  }
+
+  function scrollClamped(delta) {
+    const target = Math.max(0, Math.min(maxScroll(), track.scrollLeft + delta));
+    track.scrollTo({ left: target, behavior: 'smooth' });
+  }
+
+  function updateArrows() {
+    const max = maxScroll();
+    prev.disabled = track.scrollLeft <= 4;
+    next.disabled = track.scrollLeft >= max - 4;
+  }
+
+  prev.addEventListener('click', () => scrollClamped(-432));
+  next.addEventListener('click', () => scrollClamped(432));
+  track.addEventListener('scroll', updateArrows);
+  new ResizeObserver(updateArrows).observe(track);
+  updateArrows();
+
+  carousel._updateArrows = updateArrows;
 });
 
 /* Video modal */

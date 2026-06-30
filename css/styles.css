@@ -389,6 +389,7 @@ a { color: inherit; text-decoration: none; }
 .carousel__arrow:hover { background: var(--color-surface-alt); }
 .carousel__arrow--next { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
 .carousel__arrow--next:hover { background: var(--color-accent-hover); }
+.carousel__arrow:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
 
 /* Services */
 .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
